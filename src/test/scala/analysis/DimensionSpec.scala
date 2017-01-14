@@ -56,4 +56,14 @@ object DimensionSpec {
     type LM_S = Dimensions[Length :: Mass :: HNil, Time :: HNil]
     the[Power.Aux[LM_S, 0, Dimensions[HNil, HNil]]]
   }
+
+  object ShouldShowDimension {
+    type LM_S = Dimensions[Length :: Mass :: HNil, Time :: HNil]
+    the[ShowDimension[LM_S]]
+  }
+
+  object ShouldShowUnit extends App {
+    type LM_S = Dimensions[Length :: Mass :: HNil, Time :: HNil]
+    the[ShowUnit[LM_S]]
+  }
 }

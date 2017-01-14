@@ -133,4 +133,85 @@ object dimensions {
       type Out = DOut
     }
   }
+
+  trait Show[D] {
+    def apply(): String
+  }
+
+  type Numerator
+  type Denominator
+
+  /**
+    * Type class representing a single term within a dimensions string representation.
+    *  `D` is the dimension for the term, `I` is the number of apperances, 
+    *  `S` represents whether the term appears in the numerator or the denominator.
+    */
+  trait Term[D, I <: Nat, S[_] <: Show[_], A] {
+    def apply(): String
+  }
+  
+  object Term {
+
+    implicit def numeratorTerm[D, I <: Nat, S[_] <: Show[_]](
+      implicit dShow: S[D],
+      iValue: shapeless.ops.nat.ToInt[I]): Term[D, I, S, Numerator] =
+      new Term[D, I, S, Numerator] {
+        def apply(): String = s"${dShow()}^${iValue()}"
+      }
+
+    implicit def denominatorTerm[D, I <: Nat, S[_] <: Show[_]](
+      implicit dShow: S[D],
+      iValue: shapeless.ops.nat.ToInt[I]): Term[D, I, S, Denominator] =
+      new Term[D, I, S, Denominator] {
+        def apply(): String = s"${dShow()}^-${iValue()}"
+      }
+  }
+
+  /**
+    * Type class represeting a list of terms within a dimensions string.
+    *  `L` is the list of dimensions
+    *  `A` indicates whether the list is the Numerator or the Denominator
+    */
+  trait TermList[L <: HList, S[_] <: Show[_], A] {
+    def apply(): String
+  }
+
+  object TermList {
+    implicit def hnilTermList[S[_] <: Show[_], A]: TermList[HNil, S, A] = new TermList[HNil, S, A] {
+      def apply(): String = ""
+    }
+
+    implicit def hlistTermList[H, T <: HList, S[_] <: Show[_], A, Prefix <: HList, Suffix <: HList, Pow <: Nat](
+      implicit ev0: Partition.Aux[H :: T, H, Prefix, Suffix],
+      ev1: Length.Aux[Prefix, Pow],
+      term: Term[H, Pow, S, A],
+      tail: TermList[Suffix, S, A]
+    ): TermList[H :: T, S, A] =
+      new TermList[H :: T, S, A] {
+        def apply(): String = s"${term()} ${tail()}"
+      }
+  }
+
+  trait ShowDimension[D] extends Show[D]
+
+  object ShowDimension {
+
+    implicit def dimensionsShowDimension[N <: HList, D <: HList](
+      implicit numerator: TermList[N, ShowDimension, Numerator],
+      denominator: TermList[D, ShowDimension, Denominator]
+    ): ShowDimension[Dimensions[N, D]] = new ShowDimension[Dimensions[N, D]] {
+      def apply(): String = s"${numerator()} ${denominator()}".trim
+    }
+  }
+
+  trait ShowUnit[D] extends Show[D]
+
+  object ShowUnit {
+    implicit def dimensionsShowUnit[N <: HList, D <: HList](
+      implicit numerator: TermList[N, ShowUnit, Numerator],
+      denominator: TermList[D, ShowUnit, Denominator]
+    ): ShowUnit[Dimensions[N, D]] = new ShowUnit[Dimensions[N, D]] {
+      def apply(): String = s"${numerator()} ${denominator()}".trim
+    }
+  }
 }
