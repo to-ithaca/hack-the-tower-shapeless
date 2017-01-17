@@ -95,7 +95,7 @@ object quantity {
   /** 
    * Type class for dividing quantity `L` by `R`
    */
-  trait Divide[L <: Quantity[_, _], R <: Quantity[_, _]] {
+  trait Divide[L <: Quantity[_, _], R <: Quantity[_, _]] extends DepFn2[L, R] {
     type Out <: Quantity[_, _]
   }
   object Divide {
@@ -131,6 +131,9 @@ object quantity {
       }
   }
 
+  /**
+   * Type class for showing a quantity `Q`
+   */
   trait Show[Q <: Quantity[_, _]] {
     def apply(q: Q): String
   }

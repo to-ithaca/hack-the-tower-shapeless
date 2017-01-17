@@ -134,6 +134,9 @@ object dimensions {
     }
   }
 
+  /**
+    * Type class for showing dimensions `D`.
+    */
   trait Show[D] {
     def apply(): String
   }
@@ -192,6 +195,10 @@ object dimensions {
       }
   }
 
+  /**
+    * Type class for showing the dimension of dimensions `D`.
+    * e.g. velocity has dimensions L^1 T^-1
+    */
   trait ShowDimension[D] extends Show[D]
 
   object ShowDimension {
