@@ -1,7 +1,7 @@
 lazy val buildSettings = Seq(
   organization := "com.ithaca",
   scalaOrganization := "org.typelevel",
-  scalaVersion := "2.11.8",
+  scalaVersion := "2.12.1",
   name         := "hack-the-tower-shapeless",
   version      := "0.1.0-SNAPSHOT"
 )
@@ -27,7 +27,7 @@ lazy val commonSettings = Seq(
     scalacOptions ++= commonScalacOptions,
     libraryDependencies ++= Seq(
       "com.chuusai" %% "shapeless" % "2.3.2",
-      "eu.timepit" %% "singleton-ops" % "0.0.2",
+      "eu.timepit" %% "singleton-ops" % "0.0.3",
       "org.scalatest" %% "scalatest" % "3.0.1" % "test"
     )
 ) ++ buildSettings

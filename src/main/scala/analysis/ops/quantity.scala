@@ -16,14 +16,13 @@ object quantity {
   object Prefix {
     type Aux[Q <: Quantity[_, _], I <: Singleton with Int, Out0 <: Quantity[_, _]] = Prefix[Q, I] { type Out = Out0 }
 
-    //FIXME: this does not work, as ValueOf[Diff] cannot be resolved.  Possibly needs a fix in singleton ops's marcos.
     implicit def quantityPrefix[Prev <: Singleton with Int, Next <: Singleton with Int, Diff <: Singleton with Int, D <: Dimensions[_, _]](
-      implicit diff: OpInt.Aux[Next - Prev, Diff],
-      diffValue: ValueOf[Diff]
+      implicit diff: Prev - Next
     ): Prefix.Aux[Quantity[Prev, D], Next, Quantity[Next, D]] =
       new Prefix[Quantity[Prev, D], Next] {
         type Out = Quantity[Next, D]
-        def apply(q: Quantity[Prev, D]): Out = Quantity[Next, D](q.value * math.pow(10.0, diffValue.value))
+        //need to cast, as ValueOf cannot be resolved. Waiting for a fix in singleton ops macros
+        def apply(q: Quantity[Prev, D]): Out = Quantity[Next, D](q.value * math.pow(10.0, diff.value.asInstanceOf[Int]))
     }
   }
 
