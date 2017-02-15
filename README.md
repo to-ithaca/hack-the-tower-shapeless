@@ -1,1 +1,1 @@
-# hack-the-tower-shapeless
+# Step 0 - Dimensional Analysis
